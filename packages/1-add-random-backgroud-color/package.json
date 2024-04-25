@@ -1,11 +1,16 @@
 {
-  "name": "1-add-random-backgroud-color",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "MIT"
-}
+    "name": "1-add-random-backgroud-color",
+    "description": "my-blog",
+    "type": "module",
+    "license": "MIT",
+    "dependencies": {
+    },
+    "scripts": {
+      "start": "concurrently \"npm run start:ssr\" \"npm run start:rsc\"",
+      "start:rsc": "nodemon -- --experimental-loader ./node-jsx-loader.js ./server/rsc.js",
+      "start:ssr": "nodemon -- --experimental-loader ./node-jsx-loader.js ./server/ssr.js"
+    },
+    "devDependencies": {
+    }
+  }
+  
