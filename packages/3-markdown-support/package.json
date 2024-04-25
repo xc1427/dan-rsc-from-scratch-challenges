@@ -1,0 +1,16 @@
+{
+    "name": "3-markdown-support",
+    "description": "my-blog",
+    "type": "module",
+    "license": "MIT",
+    "dependencies": {
+    },
+    "scripts": {
+      "start": "concurrently \"npm run start:ssr\" \"npm run start:rsc\"",
+      "start:rsc": "nodemon -- --experimental-loader ./node-jsx-loader.js ./server/rsc.js",
+      "start:ssr": "nodemon -- --experimental-loader ./node-jsx-loader.js ./server/ssr.js"
+    },
+    "devDependencies": {
+    }
+  }
+  
