@@ -9,7 +9,6 @@ import { retrieveFormValue, saveComment, makeCommentDir } from "./comment.js";
 
 // This is a server to host CDN distributed resources like static files and SSR.
 createServer(async (req, res) => {
-  console.info('niubi');
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
 
@@ -27,7 +26,7 @@ createServer(async (req, res) => {
         return;
       }
       // If running in a gitpod/codespace environment, Please switch to slow 3G in your Chrome DevTool. Otherwise the redirect will fail
-      // I guess that is because there is some DDos protection.
+      // I guess that is because there is some DDoS protection.
       res.writeHead(302, { Location: val?.slug });
       res.end();
       return;
