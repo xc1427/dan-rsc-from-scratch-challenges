@@ -1,0 +1,18 @@
+{
+    "name": "4-markdown-custom-image",
+    "description": "my-blog",
+    "type": "module",
+    "license": "MIT",
+    "dependencies": {
+      "react-markdown": "^8.0.7",
+      "probe-image-size": "^7.2.3"
+    },
+    "scripts": {
+      "start": "concurrently \"npm run start:ssr\" \"npm run start:rsc\"",
+      "start:rsc": "nodemon -- --experimental-loader ./node-jsx-loader.js ./server/rsc.js",
+      "start:ssr": "nodemon -- --experimental-loader ./node-jsx-loader.js ./server/ssr.js"
+    },
+    "devDependencies": {
+    }
+  }
+  
