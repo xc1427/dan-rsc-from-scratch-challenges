@@ -76,9 +76,7 @@ function BlogLayout({ children }) {
           <hr />
         </nav>
         <main>{children}</main>
-        {/** ====== */}
-        <Footer author={<>{author}</>} />
-        {/** ====== */}
+        <Footer author={author} />
         </body>
     </html>
   );
@@ -87,9 +85,7 @@ function BlogLayout({ children }) {
 function Footer({ author }) {
   return (
     <footer>
-      {/** ====== */}
       <><hr /><div /></>
-      {/** ====== */}
       <p>
         <i>
           (c) {author} {new Date().getFullYear()}
@@ -116,10 +112,8 @@ function stringifyJSX(key, value) {
   if (value === Symbol.for("react.element")) {
     return "$RE";
 
-  /** ====== */
   } else if (value === Symbol.for('react.fragment')) {
     return "$RF";
-  /** ====== */
 
   } else if (typeof value === "string" && value.startsWith("$")) {
     return "$" + value;
@@ -141,14 +135,12 @@ async function renderJSXToClientJSX(jsx) {
   } else if (jsx != null && typeof jsx === "object") {
     if (jsx.$$typeof === Symbol.for("react.element")) {
 
-      /** ====== */
       if (jsx.type === Symbol.for('react.fragment')) {
         return {
           ...jsx,
           props: await renderJSXToClientJSX(jsx.props),
         };
       }
-      /** ====== */
 
       if (typeof jsx.type === "string") {
         return {
