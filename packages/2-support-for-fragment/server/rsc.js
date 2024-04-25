@@ -76,8 +76,10 @@ function BlogLayout({ children }) {
           <hr />
         </nav>
         <main>{children}</main>
-        <Footer author={author} />
-      </body>
+        {/** ====== */}
+        <Footer author={<>{author}</>} />
+        {/** ====== */}
+        </body>
     </html>
   );
 }
@@ -85,7 +87,9 @@ function BlogLayout({ children }) {
 function Footer({ author }) {
   return (
     <footer>
-      <hr />
+      {/** ====== */}
+      <><hr /></>
+      {/** ====== */}
       <p>
         <i>
           (c) {author} {new Date().getFullYear()}
@@ -111,6 +115,12 @@ function throwNotFound(cause) {
 function stringifyJSX(key, value) {
   if (value === Symbol.for("react.element")) {
     return "$RE";
+
+  /** ====== */
+  } else if (value === Symbol.for('react.fragment')) {
+    return "$RF";
+  /** ====== */
+
   } else if (typeof value === "string" && value.startsWith("$")) {
     return "$" + value;
   } else {
@@ -130,6 +140,16 @@ async function renderJSXToClientJSX(jsx) {
     return Promise.all(jsx.map((child) => renderJSXToClientJSX(child)));
   } else if (jsx != null && typeof jsx === "object") {
     if (jsx.$$typeof === Symbol.for("react.element")) {
+
+      /** ====== */
+      if (jsx.type === Symbol.for('react.fragment')) {
+        return {
+          ...jsx,
+          props: await renderJSXToClientJSX(jsx.props),
+        };
+      }
+      /** ====== */
+
       if (typeof jsx.type === "string") {
         return {
           ...jsx,
