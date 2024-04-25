@@ -4,6 +4,7 @@
     "type": "module",
     "license": "MIT",
     "dependencies": {
+      "react-markdown": "^8.0.7"
     },
     "scripts": {
       "start": "concurrently \"npm run start:ssr\" \"npm run start:rsc\"",
