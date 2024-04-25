@@ -66,9 +66,11 @@ async function Post({ slug }) {
 
 function BlogLayout({ children }) {
   const author = "Jae Doe";
+  const styles = { backgroundColor: `#${Math.floor((Math.random()*16777215)).toString(16)}`, transition: 'background-color 0.31s ease' };
+  console.info('styles', styles);
   return (
     <html>
-      <body>
+      <body style={{ ...styles }}>
         <nav>
           <a href="/">Home</a>
           <hr />
