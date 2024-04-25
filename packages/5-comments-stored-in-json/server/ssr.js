@@ -2,11 +2,38 @@ import { createServer } from "http";
 import { readFile } from "fs/promises";
 import { renderToString } from "react-dom/server";
 
-// This is a server to host CDN distributed resources like static files and SSR.
+/** ====== */
+import { retrieveFormValue, saveComment, makeCommentDir } from "./comment.js";
+/** ====== */
 
+
+// This is a server to host CDN distributed resources like static files and SSR.
 createServer(async (req, res) => {
+  console.info('niubi');
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
+
+    /** ====== */
+    makeCommentDir();
+    /** ====== */
+
+    /** ====== */
+    if (req.method === 'POST' && url.pathname === '/comment') {
+      const val = await retrieveFormValue(req);
+      const success = await saveComment(val);
+      if (!success) {
+        res.statusCode = 400;
+        res.end();
+        return;
+      }
+      // If running in a gitpod/codespace environment, Please switch to slow 3G in your Chrome DevTool. Otherwise the redirect will fail
+      // I guess that is because there is some DDos protection.
+      res.writeHead(302, { Location: val?.slug });
+      res.end();
+      return;
+    }
+    /** ====== */
+
     if (url.pathname === "/client.js") {
       const content = await readFile("./client.js", "utf8");
       res.setHeader("Content-Type", "text/javascript");
@@ -58,12 +85,12 @@ createServer(async (req, res) => {
 function parseJSX(key, value) {
   if (value === "$RE") {
     return Symbol.for("react.element");
-  } 
-  
+  }
+
   else if (value === "$RF") {
     return Symbol.for("react.fragment");
   }
-  
+
   else if (typeof value === "string" && value.startsWith("$$")) {
     return value.slice(1);
   } else {
