@@ -15,7 +15,11 @@ createServer(async (req, res) => {
     }
     if (url.pathname === "/favicon.ico") {
       res.setHeader("Content-Type", "image/svg+xml");
-      res.end('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d=""/></svg>');
+      res.end(
+        `<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+           <ellipse style="fill:red; stroke:none" cx="12" cy="12" rx="5" ry="5"></ellipse>
+         </svg>`
+      );
       return;
     }
     const response = await fetch("http://127.0.0.1:8081" + url.pathname);
