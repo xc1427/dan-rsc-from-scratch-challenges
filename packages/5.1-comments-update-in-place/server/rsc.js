@@ -3,9 +3,7 @@ import { readFile, readdir } from "fs/promises";
 import sanitizeFilename from "sanitize-filename";
 import ReactMarkdown from "react-markdown";
 
-/** ====== */
 import { Comment } from "./comment.js";
-/** ====== */
 
 // This is a server to host data-local resources like databases and RSC.
 
@@ -52,9 +50,7 @@ function BlogPostPage({ postSlug }) {
   return (
     <>
       <Post slug={postSlug} />
-      {/** ====== */}
       <Comment slug={postSlug} />
-      {/** ====== */}
       </>
   );
 }
