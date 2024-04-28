@@ -1,13 +1,10 @@
 import { hydrateRoot } from "react-dom/client";
 import { useEffect, createElement } from 'react';
 
-/** ====== */
 const root = hydrateRoot(document, createElement(App, {}, [getInitialClientJSX()]));
-/** ====== */
 
 let currentPathname = window.location.pathname;
 
-/** ====== */
 /** This is the technique to make form submit hijacked by client. */
 function hijackFormSubmission() {
   function delay(ms) {
@@ -51,29 +48,48 @@ function hijackFormSubmission() {
   return cleanup;
 }
 
+/** ====== */
+function setupPostSelect() {
+  const handleChange = (e) => {
+    const selectElement = e.currentTarget;
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    const url = selectedOption.value;
+    if (url) {
+      window.history.pushState(null, null, url);
+      navigate(url);
+    }
+  }
+  document.getElementById('selectPost').addEventListener('change', handleChange);
+  return () => {
+    document.getElementById('selectPost').removeEventListener('change', handleChange);
+  }
+}
+/** ====== */
+
 function App({ children }) {
   useEffect(() => {
     const cleanupFn = hijackFormSubmission();
+
+    /** ====== */
+    const cleanupFn2 = setupPostSelect();
+    /** ====== */
+
     return () => {
       cleanupFn();
+      cleanupFn2(); /** ====== */
     };
   });
   return children;
 }
-/** ====== */
-
 
 
 async function navigate(pathname) {
-
   currentPathname = pathname;
   const clientJSX = await fetchClientJSX(pathname);
   if (pathname === currentPathname) {
 
-    /** ====== */
     // root.render(clientJSX);
     root.render(createElement(App, {}, [clientJSX]));
-    /** ====== */
   }
 }
 
