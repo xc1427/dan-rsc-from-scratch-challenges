@@ -29,8 +29,8 @@ function hijackFormSubmission() {
     });
     if (response.ok) {
 
-      // When running in gitpod/codespace environment, add this because otherwise the subsequent request will fail.
-      // I guess that is because there is some DDoS protection.
+      // When running in gitpod/codespace environment, you need this because otherwise the subsequent request will fail.
+      // I guess that is because there is some DDoS protection on the platform.
       await delay(1000);
       navigate(window.location.pathname);
     }

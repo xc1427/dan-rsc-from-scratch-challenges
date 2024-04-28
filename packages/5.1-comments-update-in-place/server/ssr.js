@@ -2,9 +2,7 @@ import { createServer } from "http";
 import { readFile } from "fs/promises";
 import { renderToString } from "react-dom/server";
 
-/** ====== */
 import { retrieveFormValue, saveComment, makeCommentDir } from "./comment.js";
-/** ====== */
 
 
 // This is a server to host CDN distributed resources like static files and SSR.
@@ -12,11 +10,8 @@ createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
 
-    /** ====== */
     makeCommentDir();
-    /** ====== */
 
-    /** ====== */
     if (req.method === 'POST' && url.pathname === '/comment') {
       const val = await retrieveFormValue(req);
       const success = await saveComment(val);
@@ -26,11 +21,12 @@ createServer(async (req, res) => {
         return;
       }
 
+      /** ====== */
       res.statusCode = 200;
+      /** ====== */
       res.end();
       return;
     }
-    /** ====== */
 
     if (url.pathname === "/client.js") {
       const content = await readFile("./client.js", "utf8");

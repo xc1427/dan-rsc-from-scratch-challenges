@@ -1,4 +1,3 @@
-/** ====== */
 import { writeFile, readFile } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
