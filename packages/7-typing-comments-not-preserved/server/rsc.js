@@ -2,7 +2,7 @@ import { createServer } from "http";
 import { readFile, readdir } from "fs/promises";
 import sanitizeFilename from "sanitize-filename";
 import ReactMarkdown from "react-markdown";
-
+import React from "react";
 import { Comment } from "./comment.js";
 
 // This is a server to host data-local resources like databases and RSC.
@@ -24,7 +24,13 @@ function Router({ url }) {
     page = <BlogIndexPage />;
   } else {
     const postSlug = sanitizeFilename(url.pathname.slice(1));
-    page = <BlogPostPage postSlug={postSlug} />;
+
+    /** ====== */
+    page = <React.Fragment key={url.pathname}>
+      <BlogPostPage postSlug={postSlug} />
+    </React.Fragment>
+    /** ====== */
+
   }
   return <BlogLayout>{page}</BlogLayout>;
 }
@@ -74,6 +80,29 @@ async function Post({ slug }) {
   );
 }
 
+/** ====== */
+async function BlogSelect() {
+  const postFiles = await readdir("./posts");
+  const postSlugs = postFiles.map((file) =>
+    file.slice(0, file.lastIndexOf("."))
+  );
+  return (
+
+      <select id="selectPost" style={{ float: 'right' }}>
+        <option value="" disabled selected>Select an option</option>
+        {postSlugs.map((slug) => (
+          <option key={slug} value={slug}>
+            {slug}
+          </option>
+        ))}
+      </select>
+
+
+  );
+}
+/** ====== */
+
+
 function BlogLayout({ children }) {
   const author = "Jae Doe";
   return (
@@ -81,6 +110,7 @@ function BlogLayout({ children }) {
       <body>
         <nav>
           <a href="/">Home</a>
+          <BlogSelect />
           <hr />
           <input />
           <hr />

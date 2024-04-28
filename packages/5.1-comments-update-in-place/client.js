@@ -1,7 +1,9 @@
 import { hydrateRoot } from "react-dom/client";
 import { useEffect, createElement } from 'react';
 
-const root = hydrateRoot(document, getInitialClientJSX());
+/** ====== */
+const root = hydrateRoot(document, createElement(App, {}, [getInitialClientJSX()]));
+/** ====== */
 
 let currentPathname = window.location.pathname;
 
@@ -61,15 +63,8 @@ function App({ children }) {
 /** ====== */
 
 
-/** ====== */
-const cleanup = hijackFormSubmission();
-/** ====== */
-
 
 async function navigate(pathname) {
-  /** ====== */
-  cleanup();
-  /** ====== */
 
   currentPathname = pathname;
   const clientJSX = await fetchClientJSX(pathname);
