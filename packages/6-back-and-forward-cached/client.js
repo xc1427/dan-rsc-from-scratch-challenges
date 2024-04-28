@@ -1,15 +1,34 @@
 import { hydrateRoot } from "react-dom/client";
 
-const root = hydrateRoot(document, getInitialClientJSX());
+/** ====== */
+const jsxContentMap = new Map();
+const initialJSX = getInitialClientJSX();
 let currentPathname = window.location.pathname;
+jsxContentMap.set(currentPathname, initialJSX);
+/** ====== */
 
-async function navigate(pathname) {
+const root = hydrateRoot(document, initialJSX);
+
+/**
+ *
+ * @param {string} pathname - the pathname to navigate to
+ * @param {boolean} prioritizeCache - whether to prioritize cache over fetching
+ * @returns
+ */
+async function navigate(pathname, prioritizeCache = false) {
+  /** ====== */
   currentPathname = pathname;
-  const clientJSX = await fetchClientJSX(pathname);
-  if (pathname === currentPathname) {
-    root.render(clientJSX);
+  let clientJSX = null;
+  if (prioritizeCache && jsxContentMap.has(pathname)) {
+    clientJSX = jsxContentMap.get(pathname);
+  } else {
+    clientJSX = await fetchClientJSX(pathname);
   }
+  jsxContentMap.set(pathname, clientJSX);
+  root.render(clientJSX);
+  /** ====== */
 }
+
 
 function getInitialClientJSX() {
   const clientJSX = JSON.parse(window.__INITIAL_CLIENT_JSX_STRING__, parseJSX);
@@ -26,12 +45,12 @@ async function fetchClientJSX(pathname) {
 function parseJSX(key, value) {
   if (value === "$RE") {
     return Symbol.for("react.element");
-  } 
+  }
 
   else if (value === "$RF") {
     return Symbol.for("react.fragment");
   }
-  
+
   else if (typeof value === "string" && value.startsWith("$$")) {
     return value.slice(1);
   } else {
@@ -60,5 +79,8 @@ window.addEventListener(
 );
 
 window.addEventListener("popstate", () => {
-  navigate(window.location.pathname);
+  /** ====== */
+  navigate(window.location.pathname, true);
+  console.info('popstate happened', window.location.pathname);
+  /** ====== */
 });
