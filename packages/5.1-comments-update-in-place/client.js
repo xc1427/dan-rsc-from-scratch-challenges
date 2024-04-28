@@ -34,6 +34,7 @@ function hijackFormSubmission() {
       await delay(1000);
       navigate(window.location.pathname);
     }
+    target.reset();
   }
   for (const formElem of document.forms) {
     formElem.addEventListener("submit", handleSumbit);

@@ -1,8 +1,9 @@
 import { createServer } from "http";
 import { readFile, readdir } from "fs/promises";
 import sanitizeFilename from "sanitize-filename";
-
 import ReactMarkdown from "react-markdown";
+
+import { Comment } from "./comment.js";
 
 // This is a server to host data-local resources like databases and RSC.
 
@@ -46,7 +47,12 @@ async function BlogIndexPage() {
 }
 
 function BlogPostPage({ postSlug }) {
-  return <Post slug={postSlug} />;
+  return (
+    <>
+      <Post slug={postSlug} />
+      <Comment slug={postSlug} />
+      </>
+  );
 }
 
 async function Post({ slug }) {
@@ -54,7 +60,6 @@ async function Post({ slug }) {
   try {
 
     content = await readFile("./posts/" + slug + ".md", "utf8");
-    // As well, md files are placed in posts directory.
 
   } catch (err) {
     throwNotFound(err);
@@ -65,7 +70,7 @@ async function Post({ slug }) {
         <a href={"/" + slug}>{slug}</a>
       </h2>
       <article><ReactMarkdown>{content}</ReactMarkdown></article>
-    </section>
+      </section>
   );
 }
 
