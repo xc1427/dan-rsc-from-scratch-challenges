@@ -1,13 +1,34 @@
 import { hydrateRoot } from "react-dom/client";
+import { useEffect } from 'react';
 
-const root = hydrateRoot(document, getInitialClientJSX());
+/** ====== */
+const root = hydrateRoot(document, <ExampleClientComponent>{getInitialClientJSX()}</ExampleClientComponent>);
+/** ====== */
+
 let currentPathname = window.location.pathname;
+
+/** ====== */
+function ExampleClientComponent({ children }) {
+  useEffect(() => {
+    alert('hello world from client component!');
+  }, []);
+  return (
+    <>
+      {children}
+    </>
+  );
+}
+/** ====== */
 
 async function navigate(pathname) {
   currentPathname = pathname;
   const clientJSX = await fetchClientJSX(pathname);
   if (pathname === currentPathname) {
-    root.render(clientJSX);
+
+    /** ====== */
+    root.render(<ExampleClientComponent>{clientJSX}</ExampleClientComponent>);
+    /** ====== */
+
   }
 }
 
@@ -26,12 +47,12 @@ async function fetchClientJSX(pathname) {
 function parseJSX(key, value) {
   if (value === "$RE") {
     return Symbol.for("react.element");
-  } 
+  }
 
   else if (value === "$RF") {
     return Symbol.for("react.fragment");
   }
-  
+
   else if (typeof value === "string" && value.startsWith("$$")) {
     return value.slice(1);
   } else {
