@@ -2,6 +2,16 @@ import { createServer } from "http";
 import { readFile } from "fs/promises";
 import { renderToString } from "react-dom/server";
 
+/** ====== */
+import babel from "@babel/core";
+
+const babelOptions = {
+  babelrc: false,
+  ignore: [/\/(build|node_modules)\//],
+  plugins: [["@babel/plugin-transform-react-jsx", { runtime: "automatic" }]],
+};
+/** ====== */
+
 // This is a server to host CDN distributed resources like static files and SSR.
 
 createServer(async (req, res) => {
@@ -9,8 +19,14 @@ createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
     if (url.pathname === "/client.js") {
       const content = await readFile("./client.js", "utf8");
+
+      /** ====== */
+      const opt = Object.assign({ filename: url.pathname }, babelOptions);
+      const newResult = await babel.transformAsync(content, opt);
+      /** ====== */
+
       res.setHeader("Content-Type", "text/javascript");
-      res.end(content);
+      res.end(newResult.code);
       return;
     }
     if (url.pathname === "/favicon.ico") {
@@ -38,17 +54,22 @@ createServer(async (req, res) => {
       html += `<script>window.__INITIAL_CLIENT_JSX_STRING__ = `;
       html += JSON.stringify(clientJSXString).replace(/</g, "\\u003c");
       html += `</script>`;
+
+      /** ====== */
       html += `
         <script type="importmap">
           {
             "imports": {
               "react": "https://esm.sh/react@18.3.0-canary-c3048aab4-20240326",
+              "react/jsx-runtime": "https://esm.sh/react@18.3.0-canary-c3048aab4-20240326/jsx-runtime",
               "react-dom/client": "https://esm.sh/react-dom@18.3.0-canary-c3048aab4-20240326/client"
             }
           }
         </script>
         <script type="module" src="/client.js"></script>
       `;
+      /** ====== */
+
       res.setHeader("Content-Type", "text/html");
       res.end(html);
     }
