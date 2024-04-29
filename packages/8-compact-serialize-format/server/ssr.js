@@ -2,6 +2,10 @@ import { createServer } from "http";
 import { readFile } from "fs/promises";
 import { renderToString } from "react-dom/server";
 
+/** ====== */
+import { decompressJSX } from '../jsx-compression.js';
+/** ====== */
+
 // This is a server to host CDN distributed resources like static files and SSR.
 
 createServer(async (req, res) => {
@@ -13,6 +17,16 @@ createServer(async (req, res) => {
       res.end(content);
       return;
     }
+
+    /** ====== */
+    if (url.pathname === "/jsx-compression.js") {
+      const content = await readFile("./jsx-compression.js", "utf8");
+      res.setHeader("Content-Type", "text/javascript");
+      res.end(content);
+      return;
+    }
+    /** ====== */
+
     if (url.pathname === "/favicon.ico") {
       res.setHeader("Content-Type", "image/svg+xml");
       res.end(
@@ -34,7 +48,12 @@ createServer(async (req, res) => {
       res.end(clientJSXString);
     } else {
       const clientJSX = JSON.parse(clientJSXString, parseJSX);
-      let html = renderToString(clientJSX);
+
+      /** ====== */
+      const decompressedClientJSX = decompressJSX(clientJSX);
+      /** ====== */
+
+      let html = renderToString(decompressedClientJSX);
       html += `<script>window.__INITIAL_CLIENT_JSX_STRING__ = `;
       html += JSON.stringify(clientJSXString).replace(/</g, "\\u003c");
       html += `</script>`;

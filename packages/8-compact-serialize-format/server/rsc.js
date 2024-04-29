@@ -4,6 +4,10 @@ import sanitizeFilename from "sanitize-filename";
 
 import ReactMarkdown from "react-markdown";
 
+/** ====== */
+import { compressJSX } from '../jsx-compression.js';
+/** ====== */
+
 // This is a server to host data-local resources like databases and RSC.
 
 createServer(async (req, res) => {
@@ -102,7 +106,12 @@ function Footer({ author }) {
 
 async function sendJSX(res, jsx) {
   const clientJSX = await renderJSXToClientJSX(jsx);
-  const clientJSXString = JSON.stringify(clientJSX, stringifyJSX);
+
+  /** ====== */
+  const compressedJSX = compressJSX(clientJSX);
+  /** ====== */
+
+  const clientJSXString = JSON.stringify(compressedJSX, stringifyJSX);
   res.setHeader("Content-Type", "application/json");
   res.end(clientJSXString);
 }
