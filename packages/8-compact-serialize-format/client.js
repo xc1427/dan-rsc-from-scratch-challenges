@@ -1,5 +1,9 @@
 import { hydrateRoot } from "react-dom/client";
 
+/** ====== */
+import { decompressJSX } from './jsx-compression.js';
+/** ====== */
+
 const root = hydrateRoot(document, getInitialClientJSX());
 let currentPathname = window.location.pathname;
 
@@ -13,25 +17,33 @@ async function navigate(pathname) {
 
 function getInitialClientJSX() {
   const clientJSX = JSON.parse(window.__INITIAL_CLIENT_JSX_STRING__, parseJSX);
-  return clientJSX;
+
+  /** ====== */
+  return decompressJSX(clientJSX);
+  /** ====== */
+
 }
 
 async function fetchClientJSX(pathname) {
   const response = await fetch(pathname + "?jsx");
   const clientJSXString = await response.text();
   const clientJSX = JSON.parse(clientJSXString, parseJSX);
-  return clientJSX;
+
+  /** ====== */
+  return decompressJSX(clientJSX);
+  /** ====== */
+
 }
 
 function parseJSX(key, value) {
   if (value === "$RE") {
     return Symbol.for("react.element");
-  } 
+  }
 
   else if (value === "$RF") {
     return Symbol.for("react.fragment");
   }
-  
+
   else if (typeof value === "string" && value.startsWith("$$")) {
     return value.slice(1);
   } else {
