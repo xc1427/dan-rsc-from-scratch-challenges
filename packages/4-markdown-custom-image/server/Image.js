@@ -4,7 +4,6 @@ import React from 'react';
 // const probe = require('probe-image-size');
 
 async function Image(props) {
-  // console.log('debug cxi', 'props', props);
   const { src, alt, title } = props;
   let imageInfo = { width: undefined, height: undefined };
   if (src.startsWith('http')) {

@@ -2,36 +2,46 @@ import { createServer } from "http";
 import { readFile } from "fs/promises";
 import { renderToString } from "react-dom/server";
 
-import { retrieveFormValue, saveComment, makeCommentDir } from "./comment.js";
+import { retrieveFormValue } from './form.js';
 
+/** ====== */
+import { actionTransform } from './actionTransform.js';
+/** ====== */
 
 // This is a server to host CDN distributed resources like static files and SSR.
 createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
 
-    makeCommentDir();
-
-    if (req.method === 'POST' && url.pathname === '/comment') {
-      const val = await retrieveFormValue(req);
-      const success = await saveComment(val);
-      if (!success) {
+    /** ====== */
+    if (req.method === 'POST' && url.pathname === '/__action') {
+      const actionMetadata = await retrieveFormValue(req);
+      const { moduleName, functionName, params } = actionMetadata;
+      try {
+        const module = await import(`../${moduleName}`);
+        const fn = module[functionName];
+        const result = await fn.call(null, JSON.parse(params));
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify(result));
+        return;
+      } catch (err) {
+        console.error(err);
         res.statusCode = 400;
         res.end();
         return;
       }
-
-      res.statusCode = 200;
-      res.end();
-      return;
     }
 
-    if (url.pathname === "/client.js") {
-      const content = await readFile("./client.js", "utf8");
-      res.setHeader("Content-Type", "text/javascript");
-      res.end(content);
-      return;
+    if (url.pathname.endsWith('.js')) {
+        const fileContent = await readFile(`./${url.pathname}`, "utf8");
+        const content = actionTransform(fileContent, url.pathname.slice(1));
+        res.setHeader("Content-Type", "text/javascript");
+        res.end(content);
+        return;
     }
+    /** ====== */
+
     if (url.pathname === "/favicon.ico") {
       res.setHeader("Content-Type", "image/svg+xml");
       res.end(
