@@ -1,0 +1,16 @@
+{
+    "name": "5.2-comments-update-server-action",
+    "description": "my-blog",
+    "type": "module",
+    "license": "MIT",
+    "dependencies": {
+      "react-markdown": "^8.0.7"
+    },
+    "scripts": {
+      "start": "concurrently \"npm run start:ssr\" \"npm run start:rsc\"",
+      "start:rsc": "nodemon -- --import ./loader-register.js ./server/rsc.js",
+      "start:ssr": "nodemon -- --import ./loader-register.js ./server/ssr.js"
+    },
+    "devDependencies": {
+    }
+  }
