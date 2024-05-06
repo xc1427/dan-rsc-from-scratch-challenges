@@ -1,6 +1,10 @@
 import { hydrateRoot } from "react-dom/client";
 import { useEffect, createElement } from 'react';
 
+/** ====== */
+import { printAction, saveCommentAction } from './comment.js';
+/** ====== */
+
 const root = hydrateRoot(document, createElement(App, {}, [getInitialClientJSX()]));
 
 let currentPathname = window.location.pathname;
@@ -18,22 +22,24 @@ function hijackFormSubmission() {
     e.preventDefault();
     const target = e.currentTarget;
     const formData = new FormData(target);
-    const response = await fetch(target.action, {
-      method: "POST",
-      body: new URLSearchParams(formData),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
 
-    });
-    if (response.ok) {
-
+    /** ====== */
+    const actionData = {};
+    for (const [key, value] of formData) {
+      actionData[key] = value;
+    }
+    const responseData = await saveCommentAction(actionData);
+    if (responseData) {
+      console.info('response message:', responseData?.message);
       // When running in gitpod/codespace environment, you need this because otherwise the subsequent request will fail.
       // I guess that is because there is some DDoS protection on the platform.
       await delay(1000);
       navigate(window.location.pathname);
     }
     target.reset();
+    await printAction("UI updated.");
+    /** ====== */
+
   }
   for (const formElem of document.forms) {
     formElem.addEventListener("submit", handleSumbit);

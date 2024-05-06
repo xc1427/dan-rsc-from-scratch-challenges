@@ -1,11 +1,10 @@
 import { writeFile, readFile } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
-import { IncomingMessage } from 'http';
+import chalk from 'chalk';
 import { mkdir } from "fs/promises";
 
 const commentDirname = '__comment';
-
 
 /**
  * get comment dir name from slug
@@ -50,8 +49,30 @@ export async function Comment({ slug }) {
     );
 }
 
+/** ====== */
 
-export async function saveComment({ slug, comment: newComment }) {
+/**
+ * output something to terminal
+ */
+export async function printAction(actionData) {
+  'use server';
+  console.info(chalk.blue.bgRed.bold(actionData));
+}
+
+/**
+ * save comment exposed as a server action
+ * @param {*} actionData - submitted data
+ */
+export async function saveCommentAction(actionData) {
+  'use server';
+  await makeCommentDir();
+  await saveComment(actionData);
+  return { message: 'ok' };
+}
+
+/** ====== */
+
+async function saveComment({ slug, comment: newComment }) {
   const commentFilePath = getCommentDir(slug);
   try {
     if (!existsSync(commentFilePath)) {
@@ -61,54 +82,12 @@ export async function saveComment({ slug, comment: newComment }) {
     comment.push(newComment);
     await writeFile(commentFilePath, JSON.stringify(comment), 'utf8');
   } catch (err) {
-    return false;
+    console.error(err);
+    throw err;
   }
-  return true;
 }
 
-/**
- *
- * @param {IncomingMessage} req
- * @returns {Promise}
- */
-export function retrieveFormValue(req) {
-  return new Promise((res, rej) => {
-    let body = '';
-    req.on('data', (chunk) => {
-      body += chunk;
-    });
-    req.on('end', () => {
-      console.info('request body is:', body);
-      const formValues = new URLSearchParams(decodeEntities(body).trim());
-      const formData = {};
-      for (const [key, value] of formValues) {
-        formData[key] = value;
-      }
-      console.info('submitted formData:', formData);
-      res(formData);
-    })
-  });
-
-}
-
-function decodeEntities(encodedString) {
-  var translate_re = /&(nbsp|amp|quot|lt|gt);/g;
-  var translate = {
-      "nbsp":" ",
-      "amp" : "&",
-      "quot": "\"",
-      "lt"  : "<",
-      "gt"  : ">"
-  };
-  return encodedString.replace(translate_re, function(match, entity) {
-      return translate[entity];
-  }).replace(/&#(\d+);/gi, function(match, numStr) {
-      var num = parseInt(numStr, 10);
-      return String.fromCharCode(num);
-  });
-}
-
-export async function makeCommentDir() {
+async function makeCommentDir() {
   try {
     const commentDirPath = path.join('.', commentDirname);
     if (existsSync(commentDirPath)) {
@@ -118,6 +97,7 @@ export async function makeCommentDir() {
   } catch (err) {
     if (err.code !== "EEXIST") {
       console.error(err);
+      throw err;
     }
   }
 }

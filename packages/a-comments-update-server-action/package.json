@@ -4,13 +4,16 @@
     "type": "module",
     "license": "MIT",
     "dependencies": {
-      "react-markdown": "^8.0.7"
+        "@babel/parser": "^7.24.5",
+        "@babel/traverse": "^7.24.5",
+        "chalk": "^5.3.0",
+        "react-markdown": "^8.0.7"
     },
     "scripts": {
-      "start": "concurrently \"npm run start:ssr\" \"npm run start:rsc\"",
-      "start:rsc": "nodemon -- --import ./loader-register.js ./server/rsc.js",
-      "start:ssr": "nodemon -- --import ./loader-register.js ./server/ssr.js"
+        "start": "concurrently \"npm run start:ssr\" \"npm run start:rsc\"",
+        "start:rsc": "nodemon -- --import ./loader-register.js ./server/rsc.js",
+        "start:ssr": "nodemon -- --import ./loader-register.js ./server/ssr.js"
     },
     "devDependencies": {
     }
-  }
+}
