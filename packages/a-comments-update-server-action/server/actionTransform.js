@@ -16,7 +16,7 @@ export function actionTransform(fileContent, fileName) {
   });
 
   /**
-   * So what is actually an "action" in React ? an "action" is a stub of a server-side function. This kind of server-side function is marked by a special directive 'use server'. It is required to be implemented as a fetch call and exposed as a function import on client-side. This client-side javascript file needs to be downloaded by browser. So here what we do is get this javascript file (the stub) prepared for the moment when it is "esmodulely" imported. The code below does not deal with many edge cases. But it shows the essential.
+   * So what is actually a "server action" in React ? an "action" is a stub of a server-side function. This kind of server-side function is marked by a special directive 'use server'. It is required to be implemented as a fetch call and exposed as a function import on client-side. This client-side javascript file needs to be downloaded by browser. So here what we do is get this javascript file (the stub) prepared for the moment when it is "esmodulely" imported. The code below does not deal with many edge cases. But it shows the essential.
    */
   let functionsExposedAsServerAction = [];
   traverse.default(ast, {
